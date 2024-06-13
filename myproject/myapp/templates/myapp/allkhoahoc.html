@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+</head>
+<style>
+     body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    background-color: #d32f2f; 
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+}
+
+.first-container {
+    display: flex;
+    flex: 1;
+}
+
+.side-bar {
+    width: 200px;
+    background-color: #333;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.side-bar a {
+    display: block;
+    color: white;
+    padding: 10px 0;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.side-bar a:hover {
+    background-color: #575757;
+}
+
+.container {
+    flex: 1;
+    padding: 20px;
+}
+
+.container h1 {
+    color: #333;
+}
+.item a {
+    text-decoration: none;
+    color: #fff;
+    padding: 15px 25px;
+    margin: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px; /* Set desired width */
+    height: 60px; /* Set desired height */
+    box-sizing: border-box; /* Ensure padding is included in the dimensions */
+    background-color: #6b5b95
+}
+
+
+</style>
+<body>
+    <div class="main-container">
+        <div class="header">
+
+            {%load static %}
+            <img class="logo" src="{% static 'images/logo.webp' %}">
+            {%load static %}
+            <a href="{% url 'setting' %}"></a>
+        </div>
+        <div class="first-container">
+            <div class="side-bar">
+                <a href="{% url 'trangchu' %}" class="list-href">Trang chủ</a>
+                <a href="{% url 'thongtin' %}" class="list-href">Thông tin</a>
+                <a href="{% url 'all_courses' %}" class="list-href active">Khóa học</a>
+                <a href="{% url 'luyentap' %}" class="list-href">Luyện tập</a>
+                <a href="" class="list-hrefs"></a>
+            </div>
+            <div class="container">
+                <h1>Khóa học</h1>
+                <div class="list-courses">
+                    {% for course in courses %}
+                    <div class="item">
+                        <a href="{% url 'course_detail' course.id %}">{{ course.title }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

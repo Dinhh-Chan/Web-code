@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Code - {{ problem.title }}</title>
+</head>
+<body>
+    <h1>{{ problem.title }}</h1>
+    <p>{{ problem.description }}</p>
+    <p><strong>Difficulty:</strong> {{ problem.difficulty }}</p>
+
+    <h2>Submit Your Code</h2>
+    <form method="post">
+        {% csrf_token %}
+        <select name="language">
+            <option value="python">Python</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+        </select><br>
+        <textarea name="code" rows="10" cols="50" placeholder="Enter your code here..."></textarea><br>
+        <button type="submit">Run</button>
+    </form>
+
+    {% if result %}
+    <h2>Results</h2>
+    <ul>
+        {% for res in result %}
+        <li>
+            <p><strong>Input:</strong> {{ res.input }}</p>
+            <p><strong>Expected Output:</strong> {{ res.expected_output }}</p>
+            <p><strong>Your Output:</strong> {{ res.user_output }}</p>
+            <p><strong>Passed:</strong> {{ res.passed }}</p>
+            {% if res.error %}
+            <p><strong>Error:</strong> {{ res.error }}</p>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>

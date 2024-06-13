@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Problem List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #CC0D00;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #tags-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tag-button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #CC0D00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .tag-button:hover {
+            background-color: #a00b00;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #ffffff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .problem-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .problem-info {
+            flex-grow: 1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #CC0D00;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #a00b00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Problem List</h1>
+    <div id="tags-container">
+        {% for tag in tags %}
+        <a href="{% url 'problems_by_tag' tag.id %}">
+            <button class="tag-button" data-id="{{ tag.id }}">{{ tag.name }}</button>
+        </a>
+        {% endfor %}
+    </div>
+    <ul>
+        {% for problem in problems %}
+        <li>
+            <div class="problem-item">
+                <div class="problem-info">
+                    <h2>{{ problem.title }}</h2>
+                    <p>{{ problem.description }}</p>
+                    <p><strong>Difficulty:</strong> {{ problem.difficulty }}</p>
+                    <p><strong>Tags:</strong>
+                        {% for tag in problem.tags.all %}
+                            {{ tag.name }}
+                        {% endfor %}
+                    </p>
+                </div>
+                <div class="problem-action">
+                    <a href="{% url 'problem_detail' problem.id %}" class="btn">Làm bài</a>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

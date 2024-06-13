@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #d32f2f;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+        }
+
+        .first-container {
+            display: flex;
+            flex: 1;
+        }
+
+        .side-bar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .side-bar a {
+            display: block;
+            color: white;
+            padding: 10px 0;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .side-bar a:hover {
+            background-color: #575757;
+        }
+
+        .container {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .container h1 {
+            color: #333;
+        }
+
+        .course-and-infor {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .course {
+            flex: 1;
+        }
+
+        .course .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course .head h4 {
+            margin: 0;
+        }
+
+        .list-courses {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .list-courses a {
+            display: block;
+            width: 100px;
+            height: 100px;
+        }
+
+        .img-course {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .img-course:hover {
+            transform: scale(1.05);
+        }
+
+        .progress-container-wrapper {
+            flex: 1;
+        }
+
+        .progress-container-wrapper h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .progress-container {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-container.success {
+            background-color: #dff0d8;
+        }
+
+        .progress-info {
+            flex: 1;
+        }
+
+        .progress-bar {
+            display: flex;
+            align-items: center;
+        }
+
+        .progress-bar svg {
+            margin-right: 10px;
+        }
+
+        .progress-bar .text {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        circle.bg {
+            fill: none;
+            stroke: #e6e6e6;
+            stroke-width: 3.8;
+        }
+
+        circle.progress {
+            fill: none;
+            stroke-width: 3.8;
+            stroke-linecap: round;
+            stroke: #4CAF50;
+            transition: stroke-dasharray 0.6s ease 0s;
+        }
+
+        .progress-container.success circle.progress {
+            stroke: #4CAF50;
+        }
+        .item a {
+    text-decoration: none;
+    color: #fff;
+    padding: 15px 25px;
+    margin: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px; /* Set desired width */
+    height: 60px; /* Set desired height */
+    box-sizing: border-box; /* Ensure padding is included in the dimensions */
+    background-color: #6b5b95
+}
+    </style>
+    
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            {%load static %}
+            <img class="logo" src="{% static 'images/logo.webp' %}">
+            {%load static   %}
+            <a href="{% url 'setting' %}"></a>
+        </div>
+        <div class="first-container">
+            <div class="side-bar">
+                <a href="{% url 'trangchu' %}" class="list-href">Trang chủ</a>
+                <a href="{% url 'thongtin' %}" class="list-href">Thông tin</a>
+                <a href="{% url 'all_courses' %}" class="list-href">Khóa học</a>
+                <a href="{% url 'problem_list' %}" class="list-href">Luyện tập</a>
+                <a href="" class="list-hrefs"></a>
+            </div>
+            <div class="container">
+                <h1>Xin chào, {{ user.username }}</h1>
+                <div class="course-and-infor">
+                    <div class="course">
+                        <div class="head">
+                            <h4>Khóa học gợi ý</h4>
+                            <a href="{% url 'all_courses' %}">Tất cả khóa học</a>
+                        </div>
+                        <div class="list-courses">
+                            {% for course in courses %}
+                            <div class="item">
+                                <a href="{% url 'course_detail' course.id %}">{{ course.title }}</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="progress-container-wrapper">
+                        <h3>Tiến trình học tập</h3>
+                        <div class="progress-container">
+                            <div class="progress-info">
+                                <div>Lập trình với ngôn ngữ Script</div>
+                                <div>RIPT1302-DHCQ20232-03</div>
+                            </div>
+                            <div class="progress-bar">
+                                <svg width="50" height="50" viewBox="0 0 36 36">
+                                    <circle class="bg" cx="18" cy="18" r="15.91549431" />
+                                    <circle class="progress" cx="18" cy="18" r="15.91549431" stroke-dasharray="95, 100" />
+                                </svg>
+                                <div class="text">95%</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container success">
+                            <div class="progress-info">
+                                <div>Xác suất thống kê</div>
+                                <div>BAS1226-DHCQ20232-03</div>
+                            </div>
+                            <div class="progress-bar">
+                                <svg width="50" height="50" viewBox="0 0 36 36">
+                                    <circle class="bg" cx="18" cy="18" r="15.91549431" />
+                                    <circle class="progress" cx="18" cy="18" r="15.91549431" stroke-dasharray="100, 100" />
+                                </svg>
+                                <div class="text">&#x2714;</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-info">
+                                <div>Giải tích 2</div>
+                                <div>BAS1204-DHCQ20232-20</div>
+                            </div>
+                            <div class="progress-bar">
+                                <svg width="50" height="50" viewBox="0 0 36 36">
+                                    <circle class="bg" cx="18" cy="18" r="15.91549431" />
+                                    <circle class="progress" cx="18" cy="18" r="15.91549431" stroke-dasharray="85, 100" />
+                                </svg>
+                                <div class="text">85%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

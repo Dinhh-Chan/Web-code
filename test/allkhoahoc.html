@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="header">
+            <img class="logo" src="{% static 'images/logo.webp' %}">
+            <a href="{% url 'setting' %}"></a>
+        </div>
+        <div class="first-container">
+            <div class="side-bar">
+                <a href="{% url 'trangchu' %}" class="list-href">Trang chủ</a>
+                <a href="{% url 'thongtin' %}" class="list-href">Thông tin</a>
+                <a href="{% url 'allkhoahoc' %}" class="list-href">Khóa học</a>
+                <a href="{% url 'luyentap' %}" class="list-href">Luyện tập</a>
+                <a href="" class="list-hrefs"></a>
+            </div>
+            <div class="container">
+                <h1>Khóa học</h1>
+                <div class ="list-courses">
+                    <div class="item">
+                        <a href="python.html" class="item">Python</a>
+                        <a href="c.html" class="item">C </a>
+                        <a href="cpp.html" class="item">C++</a>
+                        <a href="js.html" class="item">Javascript</a>
+                    </div>
+                </div>
+            </div>
+                
+        </div>
+    </div>
+</body>
+
+</html>

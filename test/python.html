@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Course</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #4CAF50;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+        }
+
+        .first-container {
+            display: flex;
+            flex: 1;
+        }
+
+        .side-bar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .side-bar a {
+            display: block;
+            color: white;
+            padding: 10px 0;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        .side-bar a:hover {
+            background-color: #575757;
+        }
+
+        .container {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .container h1 {
+            color: #333;
+        }
+
+        .course-content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-content p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .course-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .course-content ul li {
+            margin-bottom: 10px;
+        }
+
+        .course-content ul li a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .course-content ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="header">
+            <img class="logo" src="{% static 'images/logo.webp' %}" alt="Logo">
+            <a href="{% url 'setting' %}"></a>
+        </div>
+        <div class="first-container">
+            <div class="side-bar">
+                <a href="{% url 'trangchu' %}" class="list-href">Trang chủ</a>
+                <a href="{% url 'thongtin' %}" class="list-href">Thông tin</a>
+                <a href="{% url 'allkhoahoc' %}" class="list-href">Khóa học</a>
+                <a href="{% url 'luyentap' %}" class="list-href">Luyện tập</a>
+                <a href="" class="list-hrefs"></a>
+            </div>
+            <div class="container">
+                <h1>Python Course</h1>
+                <div class="course-content">
+                    <p>Welcome to the Python course! This course will cover the following topics:</p>
+                    <ul>
+                        <li><a href="problem.html">1</a></li>
+                        <li><a href="problem.html">2</a></li>
+                        <li><a href="problem.html">3</a></li>
+                        <li><a href="problem.html">4</a></li>
+                        <li><a href="problem.html">5</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

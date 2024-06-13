@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Problems by Tag</title>
+</head>
+<body>
+    <h1>Problems for Tag: {{ tag.name }}</h1>
+    <a href="{% url 'problem_list' %}">Back to All Problems</a>
+    <ul>
+        {% for problem in problems %}
+        <li>
+            <h2>{{ problem.title }}</h2>
+            <p>{{problem.id}}
+            <p>{{ problem.description }}</p>
+            <p><strong>Difficulty:</strong> {{ problem.difficulty }}</p>
+            <p><strong>Tags:</strong>
+                {% for tag in problem.tags.all %}
+                    {{ tag.name }}
+                {% endfor %}
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

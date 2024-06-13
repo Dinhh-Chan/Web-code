@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Code</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  
+    <script>
+        $(document).ready(function() {
+            $("#code-submission-form").submit(function(event) {
+                event.preventDefault(); 
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'submit_code' problem.id %}", 
+                    data: formData,
+                    success: function(response) {
+                        $("#results").html(""); 
+                        var resultsList = $("<ul>");
+                        for (var i = 0; i < response.results.length; i++) {
+                            var result = response.results[i];
+                            var resultItem = $("<li>");
+                            resultItem.append("<p><strong>Input:</strong></p><pre>" + result.input + "</pre>");
+                            resultItem.append("<p><strong>Expected Output:</strong></p><pre>" + result.expected_output + "</pre>");
+                            resultItem.append("<p><strong>Your Output:</strong></p><pre>" + result.output + "</pre>");
+                            resultItem.append("<p><strong>Error:</strong></p><pre>" + result.error + "</pre>");
+                            resultItem.append("<p><strong>Passed:</strong> " + result.passed + "</p>");
+                            resultsList.append(resultItem);
+                        }
+                        $("#results").append(resultsList);
+                    },
+                    error: function() {
+                        alert("An error occurred while submitting your code.");
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Submit Code for {{ problem.title }}</h1>
+    <form id="code-submission-form" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <div id="results"></div>
+
+    <h2>Previous Submissions</h2>
+    <div id="previous-submissions">
+        {% if previous_submissions %}
+            <ul>
+                {% for submission in previous_submissions %}
+                    <li>
+                        <p><strong>Submitted at:</strong> {{ submission.submission_time }}</p>
+                        <p><strong>Code:</strong></p><pre>{{ submission.code }}</pre>
+                        <p><strong>Output:</strong></p><pre>{{ submission.output }}</pre>
+                        <p><strong>Passed:</strong> {{ submission.passed }}</p>
+                        {% if submission.error %}
+                            <p><strong>Error:</strong></p><pre>{{ submission.error }}</pre>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No previous submissions.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
