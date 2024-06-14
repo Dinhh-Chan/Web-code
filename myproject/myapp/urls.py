@@ -20,5 +20,6 @@ urlpatterns = [
      path('luyentap/', views.all_problems, name='all_problems'), 
     # path('evaluate/', evaluate_submission, name='evaluate_submission'),
     path('submit_code/<int:problem_id>/', views.submit_code, name='submit_code'),
+     path('edit_submission/<int:submission_id>/', views.edit_submission, name='edit_submission'),
 
 ]

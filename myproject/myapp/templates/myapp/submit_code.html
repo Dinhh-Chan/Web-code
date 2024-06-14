@@ -3,6 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <title>Submit Code</title>
+    <style>
+        .main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    background-color: #d32f2f; 
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+}
+
+.first-container {
+    display: flex;
+    flex: 1;
+}
+
+.side-bar {
+    width: 200px;
+    background-color: #333;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.side-bar a {
+    display: block;
+    color: white;
+    padding: 10px 0;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.side-bar a:hover {
+    background-color: #575757;
+}
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            background: #5cb85c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4cae4c;
+        }
+
+        #results ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #results li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #fafafa;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 3px;
+            color: #fff;
+        }
+
+        .passed {
+            background-color: #5cb85c;
+        }
+
+        .failed {
+            background-color: #d9534f;
+        }
+        .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display : block; 
+            flex-direction: row;
+        }
+
+
+        .content {
+            display: flex;
+            justify-content: space-between;
+            font-size : 14px; 
+            flex-direction: row;
+        }
+
+        .title-des {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .form-sub {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form form button {
+            align-self: flex-end;
+            margin-top: 10px;
+        }
+
+        .form-sub h2 {
+            margin-top: 20px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 3px;
+            color: #fff;
+        }
+
+        .passed {
+            background-color: #5cb85c;
+        }
+
+        .failed {
+            background-color: #d9534f;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #fafafa;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .edit-button {
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .edit-button button {
+            background: #5cb85c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .edit-button button:hover {
+            background: #4cae4c;
+        }
+        
+    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  
     <script>
         $(document).ready(function() {
@@ -28,8 +241,12 @@
                         }
                         $("#results").append(resultsList);
                     },
-                    error: function() {
-                        alert("An error occurred while submitting your code.");
+                    error: function(response) {
+                        if (response.responseJSON && response.responseJSON.error) {
+                            alert(response.responseJSON.error);
+                        } else {
+                            alert("An error occurred while submitting your code.");
+                        }
                     }
                 });
             });
@@ -37,33 +254,63 @@
     </script>
 </head>
 <body>
-    <h1>Submit Code for {{ problem.title }}</h1>
-    <form id="code-submission-form" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
-    <div id="results"></div>
-
-    <h2>Previous Submissions</h2>
-    <div id="previous-submissions">
-        {% if previous_submissions %}
-            <ul>
-                {% for submission in previous_submissions %}
-                    <li>
-                        <p><strong>Submitted at:</strong> {{ submission.submission_time }}</p>
-                        <p><strong>Code:</strong></p><pre>{{ submission.code }}</pre>
-                        <p><strong>Output:</strong></p><pre>{{ submission.output }}</pre>
-                        <p><strong>Passed:</strong> {{ submission.passed }}</p>
-                        {% if submission.error %}
-                            <p><strong>Error:</strong></p><pre>{{ submission.error }}</pre>
+    <div class="main-container">
+        <div class="header">
+            {% load static %}
+            <img class="logo" src="{% static 'images/logo.webp' %}">
+            <a href="{% url 'setting' %}"></a>
+        </div>
+        <div class="first-container">
+            <div class="side-bar">
+                <a href="{% url 'trangchu' %}" class="list-href">Trang chủ</a>
+                <a href="{% url 'thongtin' %}" class="list-href">Thông tin</a>
+                <a href="{% url 'all_courses' %}" class="list-href active">Khóa học</a>
+                <a href="{% url 'luyentap' %}" class="list-href">Luyện tập</a>
+                <a href="" class="list-hrefs"></a>
+            </div>
+        <div class="container">
+            <div class="content">
+                <div class="title-des">
+                    <h1>{{ problem.title }}</h1>
+                    <p>{{ problem.description|linebreaksbr }}</p>
+                </div>
+                <div class="form-sub">
+                    <div class="form">
+                        <form id="code-submission-form" method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit">Submit</button>
+                        </form>
+                        <div id="results"></div>
+                    </div>
+                    
+                    <h2>Previous Submissions</h2>
+                    <div id="previous-submissions">
+                        {% if previous_submissions %}
+                        <ul>
+                            {% for submission in previous_submissions %}
+                            <li>
+                                
+                                <p><strong>Status:</strong>
+                                    <span class="status {% if submission.passed %}passed{% else %}failed{% endif %}">
+                                        {% if submission.passed %}Qua{% else %}Không qua{% endif %}
+                                    </span>
+                                </p>
+                                <div class="edit-button">
+                                    <a href="{% url 'edit_submission' submission.id %}">
+                                        <button>Edit Code</button>
+                                    </a>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No previous submissions.</p>
                         {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No previous submissions.</p>
-        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

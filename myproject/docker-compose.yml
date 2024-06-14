@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE:  testa
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: 29092005
+      MYSQL_ROOT_PASSWORD: 29092005
+    ports:
+      - "3307:3306"  # Thay đổi cổng bên ngoài thành 3307
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:

@@ -235,3 +235,50 @@ h4 {
 .item a:hover {
     opacity: 0.8;
 }
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.container > * {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.container form button {
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+.previous-submissions {
+    margin-top: 20px;
+}
+
+.previous-submissions ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.previous-submissions li {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.previous-submissions li p {
+    margin: 0;
+}
+
+.status.passed {
+    color: green;
+}
+
+.status.failed {
+    color: red;
+}

@@ -12,11 +12,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.conf import settings
 import requests
+from django.contrib.auth import update_session_auth_hash
 import json 
 from django.contrib.auth import get_user_model
 import tempfile
 import os
 import datetime 
+from .forms import UserUpdateForm, CustomPasswordChangeForm
 from django.views.decorators.csrf import csrf_exempt
 import django 
 from .forms import CodeSubmissionForm
@@ -66,7 +68,13 @@ def allkhoahoc(request):
     return render(request, 'myapp/allkhoahoc.html')
 
 def luyentap(request):
-    return render(request, 'myapp/luyentap.html')
+    tags = Tag.objects.all()
+    problems = Problem.objects.all().order_by('id')
+    return render(request, 'myapp/luyentap.html', {
+        'tags': tags,
+        'problems': problems,
+    })
+
 def setting(request):
     return render(request, 'myapp/setting.html') 
 
@@ -101,64 +109,50 @@ def problem_detail(request, problem_id):
     test_cases = TestCase.objects.filter(problem=problem)
     result = None
 
-    return result
+def run_code_jdoodle(code, language, input_data):
+    url = "https://api.jdoodle.com/v1/execute"
+    
+    if language in ['c', 'cpp']:
+        # Tạo tệp tạm thời để lưu trữ dữ liệu đầu vào
+        with tempfile.NamedTemporaryFile(delete=False, mode='w') as temp_input:
+            temp_input.write(input_data)
+            temp_input.flush()
+            input_file = temp_input.name
+        
+        # Đọc dữ liệu đầu vào từ tệp
+        with open(input_file, 'r') as file:
+            input_data = file.read()
+    
+    payload = {
+        "clientId": "f032a9b764d0c14c77a666efd08df81e",         # Thay YOUR_CLIENT_ID bằng clientId của bạn từ JDoodle
+        "clientSecret": "d03d42e5cbc39bd3ab466b0f03d2735011456ff3639245f911d290a07d42b09f", # Thay YOUR_CLIENT_SECRET bằng clientSecret của bạn từ JDoodle
+        "script": code,
+        "language": language,
+        "versionIndex": "0",
+        "stdin": input_data
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
+
 def run_code(code, input_data, language):
-    import subprocess
-    import tempfile
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.c' if language == 'C' else '.cpp' if language == 'C++' else '.py', mode='w', encoding='utf-8') as temp_file:
-        temp_file.write(code)
-        temp_file.flush()
-
-    output = ''
-    error = ''
-
     if language == 'Python':
-        command = ['python', temp_file.name]
+        jdoodle_language = 'python3'
     elif language == 'C':
-        executable = temp_file.name.replace('.c', '')
-        compile_command = ['gcc', temp_file.name, '-o', executable]
-        command = [executable]
+        jdoodle_language = 'c'
     elif language == 'C++':
-        executable = temp_file.name.replace('.cpp', '')
-        compile_command = ['g++', temp_file.name, '-o', executable]
-        command = [executable]
+        jdoodle_language = 'cpp17'
     else:
         return '', f'Unsupported language: {language}'
 
-    try:
-        if language in ['C', 'C++']:
-            compile_result = subprocess.run(compile_command, capture_output=True)
-            if compile_result.returncode != 0:
-                error = compile_result.stderr.decode('utf-8')
-                return output, error
+    result = run_code_jdoodle(code, jdoodle_language, input_data)
+    output = result.get('output', '')
+    error = result.get('error', '')
 
-        result = subprocess.run(
-            command,
-            input=input_data.encode('utf-8'),
-            capture_output=True,
-            timeout=5
-        )
-        try:
-            output = result.stdout.decode('utf-8').strip()
-        except UnicodeDecodeError:
-            output = result.stdout.decode('latin-1').strip()  # Try a fallback encoding
-        try:
-            error = result.stderr.decode('utf-8').strip()
-        except UnicodeDecodeError:
-            error = result.stderr.decode('latin-1').strip()  # Try a fallback encoding
-    except subprocess.TimeoutExpired:
-        output = ''
-        error = 'Timeout: Your code took too long to execute.'
-    except subprocess.CalledProcessError as e:
-        output = ''
-        error = f"Error running code: {e}"  # Provide more detailed error information
+    if result.get('statusCode') != 200:
+        error = result.get('error', '')
 
-    os.remove(temp_file.name)
-    if language in ['C', 'C++']:
-        os.remove(executable)
+    return output, error, False
 
-    return output, error
 def submit_code(request, problem_id):
     problem = get_object_or_404(Problem, id=problem_id)
     test_cases = TestCase.objects.filter(problem=problem)
@@ -169,10 +163,13 @@ def submit_code(request, problem_id):
             code = form.cleaned_data['code']
             language = form.cleaned_data['language']
             results = []
+            timeout_error_occurred = False
 
             for test_case in test_cases:
-                output, error = run_code(code, test_case.input_data, language)
-                passed = output == test_case.expected_output.strip()
+                output, error, timeout_error = run_code(code, test_case.input_data, language)
+                if timeout_error:
+                    timeout_error_occurred = True
+                passed = output.strip() == test_case.expected_output.strip()
                 results.append({
                     'input': test_case.input_data,
                     'expected_output': test_case.expected_output,
@@ -181,14 +178,17 @@ def submit_code(request, problem_id):
                     'passed': passed,
                 })
 
+            if timeout_error_occurred:
+                return JsonResponse({'error': 'Timeout: Your code took too long to execute.'}, status=400)
+
             # Save the submission
             submission = Submission.objects.create(
                 user=request.user,
                 problem=problem,
                 code=code,
                 language=language,
-                execution_time=sum(r['execution_time'] for r in results if 'execution_time' in r),
-                memory_usage=sum(r['memory_usage'] for r in results if 'memory_usage' in r),
+                execution_time=0,  # Không có thông tin thời gian thực thi từ JDoodle
+                memory_usage=0,    # Không có thông tin sử dụng bộ nhớ từ JDoodle
                 output=output,
                 passed=all(r['passed'] for r in results),
                 error='\n'.join(r['error'] for r in results if r['error'])
@@ -207,3 +207,47 @@ def submit_code(request, problem_id):
         'problem': problem,
         'previous_submissions': previous_submissions
     })
+def edit_submission(request, submission_id):
+    submission = get_object_or_404(Submission, id=submission_id)
+    if request.method == 'POST':
+        form = CodeSubmissionForm(request.POST, initial={'code': submission.code, 'language': submission.language})
+        if form.is_valid():
+            submission.code = form.cleaned_data['code']
+            submission.language = form.cleaned_data['language']
+            submission.save()
+            return redirect('submit_code', problem_id=submission.problem.id)
+    else:
+        form = CodeSubmissionForm(initial={'code': submission.code, 'language': submission.language})
+
+    return render(request, 'myapp/edit_submission.html', {
+        'form': form,
+        'submission': submission,
+        'problem': submission.problem,
+    })
+@login_required
+def thongtin(request):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        
+        if 'update_user' in request.POST:
+            if user_form.is_valid():
+                user_form.save()
+                messages.success(request, 'Tài khoản của bạn đã được cập nhật!')
+                return redirect('thongtin')
+
+        if 'change_password' in request.POST:
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Mật khẩu của bạn đã được cập nhật!')
+                return redirect('thongtin')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        password_form = CustomPasswordChangeForm(user=request.user)
+
+    return render(request, 'myapp/thongtin.html', {
+        'user_form': user_form,
+        'password_form': password_form
+    })
+    

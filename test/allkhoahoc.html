@@ -24,13 +24,41 @@
                 <a href="" class="list-hrefs"></a>
             </div>
             <div class="container">
-                <h1>Khóa học</h1>
-                <div class ="list-courses">
-                    <div class="item">
-                        <a href="python.html" class="item">Python</a>
-                        <a href="c.html" class="item">C </a>
-                        <a href="cpp.html" class="item">C++</a>
-                        <a href="js.html" class="item">Javascript</a>
+                <div class="title-des">
+                    <h1>{{ problem.title }}</h1>
+                    <p>{{ problem.description|linebreaksbr }}</p>
+                </div>
+                <div class="form-sub">
+                    <div class = "form">
+                        <form id="code-submission-form" method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit">Submit</button>
+                        </form>
+                        <div id="results"></div>
+                    </div>
+                    
+                    <h2>Previous Submissions</h2>
+                    <div id="previous-submissions">
+                        {% if previous_submissions %}
+                        <ul>
+                            {% for submission in previous_submissions %}
+                            <li>
+                                <p><strong>Submitted at:</strong> {{ submission.submission_time }}</p>
+                                <p><strong>Status:</strong>
+                                    <span class="status {% if submission.passed %}passed{% else %}failed{% endif %}">
+                                        {% if submission.passed %}Qua{% else %}Không qua{% endif %}
+                                    </span>
+                                </p>
+                                <a href="{% url 'edit_submission' submission.id %}">
+                                    <button>Edit Code</button>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No previous submissions.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

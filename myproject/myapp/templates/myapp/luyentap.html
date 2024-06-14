@@ -1,107 +1,192 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Problem List</title>
+    <meta charset="UTF-8">
+    <title>Luyện tập</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+         body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    background-color: #d32f2f; 
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+}
+
+.first-container {
+    display: flex;
+    flex: 1;
+}
+
+.side-bar {
+    width: 200px;
+    background-color: #333;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.side-bar a {
+    display: block;
+    color: white;
+    padding: 10px 0;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.side-bar a:hover {
+    background-color: #575757;
+}
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
             padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            color: #CC0D00;
-            text-align: center;
-            margin-bottom: 20px;
+        h1, h2 {
+            color: #333;
         }
 
-        #tags-container {
-            text-align: center;
-            margin-bottom: 20px;
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .tag-button {
-            padding: 10px 15px;
+        .tag {
+            display: inline-block;
+            background: #5cb85c;
+            color: #fff;
+            padding: 5px 10px;
             margin: 5px;
-            background-color: #CC0D00;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            border-radius: 3px;
+            text-decoration: none;
         }
 
-        .tag-button:hover {
-            background-color: #a00b00;
+        .hidden {
+            display: none;
+        }
+
+        .show-more {
+            margin: 10px 0;
+            cursor: pointer;
+            color: #007bff;
+            text-decoration: underline;
+        }
+        .show-less{
+             margin: 10px 0;
+            cursor: pointer;
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .problem-list {
+            margin-top: 20px;
         }
 
         ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
         }
 
         li {
-            background-color: #ffffff;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #fafafa;
+        }
+        .submission-item.passed {
+            background: #dff06;
         }
 
-        .problem-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .submission-item.failed {
+            background: #dff0d8;
         }
-
-        .problem-info {
-            flex-grow: 1;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            background-color: #CC0D00;
-            color: white;
+        a {
             text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            color: #333;
         }
 
-        .btn:hover {
-            background-color: #a00b00;
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h1>Problem List</h1>
-    <div id="tags-container">
-        {% for tag in tags %}
-        <a href="{% url 'problems_by_tag' tag.id %}">
-            <button class="tag-button" data-id="{{ tag.id }}">{{ tag.name }}</button>
-        </a>
-        {% endfor %}
-    </div>
-    <ul>
-        {% for problem in problems %}
-        <li>
-            <div class="problem-item">
-                <div class="problem-info">
-                    <h2>{{ problem.title }}</h2>
-                    <p>{{ problem.description }}</p>
-                    <p><strong>Difficulty:</strong> {{ problem.difficulty }}</p>
-                    <p><strong>Tags:</strong>
-                        {% for tag in problem.tags.all %}
-                            {{ tag.name }}
-                        {% endfor %}
-                    </p>
+    <div class="main-container">
+        <div class="header">
+            {% load static %}
+            <img class="logo" src="{% static 'images/logo.webp' %}">
+            <a href="{% url 'setting' %}"></a>
+        </div>
+        <div class="first-container">
+            <div class="side-bar">
+                <a href="{% url 'trangchu' %}" class="list-href">Trang chủ</a>
+                <a href="{% url 'thongtin' %}" class="list-href">Thông tin</a>
+                <a href="{% url 'all_courses' %}" class="list-href active">Khóa học</a>
+                <a href="{% url 'luyentap' %}" class="list-href">Luyện tập</a>
+                <a href="" class="list-hrefs"></a>
+            </div>
+            <div class="container">
+                <h1>Luyện tập</h1>
+                <div class="tag-container" id="tag-container">
+                    {% for tag in tags %}
+                        <a href="{% url 'problems_by_tag' tag.id %}" class="tag {% if forloop.counter > 5 %}hidden{% endif %}">{{ tag.name }}</a>
+                    {% endfor %}
                 </div>
-                <div class="problem-action">
-                    <a href="{% url 'problem_detail' problem.id %}" class="btn">Làm bài</a>
+                <div class="show-more" id="show-more">Hiển thị thêm</div>
+                <div class="show-less hidden" id="show-less">Thu gọn</div>
+                <div class="problem-list">
+                    <h2>Bài tập</h2>
+                    <ul>
+                        {% for problem in problems %}
+                            <li class="submission-item {% if problem.passed %}passed{% else %}failed{% endif %}">
+                                <a href="{% url 'submit_code' problem.id %}">{{ problem.title }}</a>
+                    
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
-        </li>
-        {% endfor %}
-    </ul>
+        </div>
+    </div>
+     <script>
+        document.getElementById('show-more').addEventListener('click', function() {
+            var hiddenTags = document.querySelectorAll('.tag.hidden');
+            hiddenTags.forEach(function(tag) {
+                tag.classList.remove('hidden');
+            });
+            this.style.display = 'none'; // Ẩn nút "Hiển thị thêm"
+            document.getElementById('show-less').style.display = 'inline'; // Hiển thị nút "Thu gọn"
+        });
+
+        document.getElementById('show-less').addEventListener('click', function() {
+            var tags = document.querySelectorAll('.tag');
+            tags.forEach(function(tag, index) {
+                if (index >= 5) {
+                    tag.classList.add('hidden');
+                }
+            });
+            this.style.display = 'none'; // Ẩn nút "Thu gọn"
+            document.getElementById('show-more').style.display = 'inline'; // Hiển thị nút "Hiển thị thêm"
+        });
+    </script>
 </body>
 </html>
